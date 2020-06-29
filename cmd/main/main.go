@@ -19,11 +19,11 @@ func main() {
 
 	db := database.NewSqlClient()
 	doMigrate(db, "ecommerce")
-	// if err != nil {
-	// 	logs.Log().Error(err.Error())
-	// 	return
-	// }
 	defer db.Close()
+
+	mux := Routes()
+	server := NewServer(mux)
+	server.Run()
 
 }
 
