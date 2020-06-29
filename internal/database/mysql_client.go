@@ -8,6 +8,7 @@ import (
 )
 
 type MySqlClient struct {
+	*sql.DB
 }
 
 func NewSqlClient(source string) *sql.DB {
@@ -18,5 +19,8 @@ func NewSqlClient(source string) *sql.DB {
 		panic(err)
 	}
 
-	return db
+	if err != nil {
+		logs.Log().Warn(args...:"cannot conect to mysql")
+	} 
+	return &MySqlClient(DB:db)
 }
