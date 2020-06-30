@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/C-Agudo/ecomerce-ApiRest/internal/database"
 	"github.com/C-Agudo/ecomerce-ApiRest/internal/logs"
+	products "github.com/C-Agudo/ecomerce-ApiRest/products/web"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate"
 	migration "github.com/golang-migrate/migrate/database/mysql"
@@ -17,11 +20,19 @@ const (
 func main() {
 	_ = logs.InitLogger()
 
-	db := database.NewSqlClient()
-	doMigrate(db, "ecommerce")
-	defer db.Close()
+	usuario := "root"
+	pass := "root"
+	host := "tcp(127.0.0.1:3308)"
+	nombreBaseDeDatos := "ecommerce"
 
-	mux := Routes()
+	db := database.NewSqlClient(fmt.Sprintf("%s:%s@%s/%s", usuario, pass, host, nombreBaseDeDatos))
+	doMigrate(db, "ecommerce")
+	// defer db.Close()
+
+	// productHandler := web.ProductHandler(db)
+	mux := Routes(
+		products.NewCreateProductHandler(db),
+	)
 	server := NewServer(mux)
 	server.Run()
 
